@@ -1,0 +1,145 @@
+.card-border1 {
+  border: 3px solid black;
+  padding: 5px;
+  border-radius: 1rem;
+  height: fit-content;
+  width: 15.1rem;
+  font-family: 'Apple Symbols';
+}
+
+.top-root {
+  padding: 0.5rem;
+  padding-bottom: 0;
+}
+
+.card-border2 {
+  border: 2px solid black;
+  border-radius: .8rem;
+  padding: 4px;
+}
+
+.tooltip-parent {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding-bottom: 1px;
+}
+
+.help-tooltip {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.help-tooltip img {
+  width: 17px;
+}
+
+.flashcard-bottom {
+  border-top: 2px solid black;
+  padding-top: 14px !important;
+}
+
+.flashcard-bottom input {
+  font-size: 5rem;
+  width: 12.4rem;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  border-radius: 0.2rem;
+  border: 2px solid black;
+  line-height: 3rem;
+  vertical-align: center;
+}
+
+.flashcard-top {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 5rem;
+  line-height: 5rem;
+  height: 5.5rem;
+}
+
+.card-body {
+  padding: 0.5rem;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media only screen and (max-width: 700px) {
+  .card-border1 {
+    border: 2px solid black;
+    padding: 3px;
+    border-radius: 0.8rem;
+    height: fit-content;
+    width: 11rem;
+    font-family: 'Apple Symbols';
+  }
+
+  .top-root {
+    padding: 0.2rem;
+    padding-bottom: 0;
+  }
+
+  .card-border2 {
+    border: 1.5px solid black;
+    border-radius: .5rem;
+    padding: 3px;
+  }
+
+  .tooltip-parent {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding-bottom: 0.8px;
+  }
+
+  .help-tooltip {
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  .help-tooltip img {
+    width: 14px;
+  }
+
+  .flashcard-bottom {
+    border-top: 1.5px solid black;
+    padding-top: 11px !important;
+  }
+
+  .flashcard-bottom input {
+    font-size: 3rem;
+    width: 9rem;
+    text-align: right;
+    padding: 0;
+    margin: 0;
+    border-radius: 0.15rem;
+    border: 1.5px solid black;
+    line-height: 2rem;
+    vertical-align: center;
+  }
+
+  .flashcard-top {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 3rem;
+    line-height: 3rem;
+    height: 3.3rem;
+  }
+
+  .card-body {
+    padding: 0.4rem;
+  }
+}

@@ -1,0 +1,101 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css');
+
+body {
+  font-family: 'Avenir Next';
+}
+
+.navbar {
+  border-bottom: 2px solid #dbdddd;
+  margin-bottom: calc(15px + 0.6vw);
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.navbar-nav {
+  margin-right: auto;
+}
+
+.nav-link {
+  color: #ff7301;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #9e6e4d;
+}
+
+.nav-link:focus {
+  color: #9e6e4d;
+}
+
+.logo {
+  width: 200px;
+}
+
+.footer {
+  padding: 1rem;
+  position: absolute;
+  bottom: 0%;
+  color: #9e6e4d;
+  background-color: #f2f0ed;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.hidden {
+  color: transparent;
+  user-select: none;
+}
+
+.center {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  flex-direction: column;
+}
+
+h1 {
+  font-weight: 430;
+  font-size: calc(2.5rem + 0.7vw);
+}
+
+@media only screen and (max-width: 825px) {
+  h1 {
+    font-size: 37px;
+    margin-bottom: 12px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .navbar-nav {
+    margin-right: 0;
+    flex-direction: row;
+  }
+
+  .logo {
+    width: 140px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+  }
+
+  .footer {
+    padding: 10px;
+    font-size: 8px;
+  }
+}
+
+@media only screen and (min-width: 2000px) {
+  h1 {
+    font-size: 3rem;
+  }
+}

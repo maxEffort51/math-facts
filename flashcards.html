@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="flashcard.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <title>Math Facts - Flashcard Activity</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><img class="logo" src="logo.png" alt="Math Facts"></a>
+      <ul class="navbar-nav mt-1">
+        <li class="nav-item p-1">
+          <a class="nav-link" href="index.html">Flashcards</a>
+        </li>
+        <li class="nav-item p-1">
+          <a class="nav-link" href="report.html">Progress</a>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid center">
+    <div class="card center card-border1">
+      <div class="card-border2">
+        <div class="card-img-top top-root">
+          <div class="flashcard-top">
+            <span class="hidden">_</span>
+            <span id="n1">0</span>
+          </div>
+          <div class="flashcard-top">
+            <span id="sym">+</span>
+            <span id="n2">0</span>
+          </div>
+        </div>
+        <div class="card-body flashcard-bottom">
+          <div class="tooltip-parent">
+            <button type="button" class="help-tooltip" data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Hit the Spacebar or Return key to submit, or press Escape to leave the activity">
+              <img src="help-tooltip.png"
+                alt="Hit the Spacebar or Return key to submit, or press Escape to leave the activity" width="17px">
+            </button>
+          </div>
+          <input type="text" name="answer" id="input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="container-fluid footer">© 2024 Terry Family. All rights reserved.</footer>
+
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=o5C2RKed"></script>
+  <script type="module" src="handle-input.js"></script>
+  <script type="module" src="handle-flashcards.js"></script>
+  <script>
+    document.getElementsByTagName('footer')[0].value = `© ${new Date().getFullYear()} Terry Family. All rights reserved. `;
+    document.addEventListener('DOMContentLoaded', function () {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+  </script>
+</body>
+
+</html>
