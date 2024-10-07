@@ -15,6 +15,10 @@ body {
   margin-right: auto;
 }
 
+.nav-r {
+  margin-right: 0 !important;
+}
+
 .nav-link {
   color: #ff7301;
   font-size: 20px;
