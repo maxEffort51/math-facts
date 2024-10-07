@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="options.css">
   <link rel="stylesheet" href="report.css">
-  <title>Users - Math Facts</title>
+  <title>Login - Math Facts</title>
 </head>
 
 <body>
@@ -32,27 +32,24 @@
   </nav>
 
   <div class="container-fluid align-middle me-auto">
-    <h1 class="center">Multiple Users</h1>
+    <h1 class="center">Log In</h1>
     <div class="center option">
-      <p>Add multiple user accounts per device below.</p>
-      <table>
-        <tr>
-          <th>Username</th>
-          <th>Password</th>
-          <th>Modify</th>
-        </tr>
-        <tr>
-          <td>
-            <button id="new-user" class="btn -0">+</button>
-          </td>
-        </tr>
-      </table>
+      <form>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+      </form>
     </div>
   </div>
 
   <footer class="container-fluid footer">© 2024 Terry Family. All rights reserved.</footer>
 
-  <script src="users.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
