@@ -33,27 +33,21 @@
     <h1 class="center">Multiple Users</h1>
     <div class="center">
       <p>Add multiple user accounts per device below.</p>
-      <div class="alert alert-danger mb-2 p-2 px-3" id="process-info" role="alert">
+      <div class="alert alert-danger mb-2 p-2 px-3 collapse" id="process-info" role="alert">
         <p class="mb-0"> You didn't fill out both of the required fields!</p>
       </div>
-      <table class="table table-responsive table-striped" style="width: 525px">
-        <thead>
-          <tr>
-            <th scope="col">Username</th>
-            <th scope="col">Password</th>
-            <th scope="col">Modify</th>
-          </tr>
-        </thead>
-        <tbody id="user-list">
-          <tr id="last">
-            <td>
-              <button id="new-user" class="btn">+</button>
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+      <form>
+        <table class="table table-responsive table-striped" style="width: 525px">
+          <thead>
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Password</th>
+              <th scope="col">Modify</th>
+            </tr>
+          </thead>
+          <tbody id="user-list"></tbody>
+        </table>
+      </form>
     </div>
   </div>
 

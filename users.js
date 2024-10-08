@@ -19,33 +19,56 @@ if (Object.is(Users, null)) {
 var infoAlert = document.getElementById("process-info");
 
 var secure = (password) => {
-  // reverse the letters
-  // make all lowercase letters capitalized and vice versa
-  // make numbers from 0 to 9 map opposite: 9 -> 0, 8 -> 1, 7 -> 2, 6 -> 3, 5 -> 4, 4 -> 5, ...
-  // generate a random number from 1 to 26 and use Caeser Cipher on the letters, then add the number in the 5th spot
   // "Vanilla364" -> "463allinaV" -> "463ALLINAv" -> "536ALLINAv" -> 3: "536D3OOLQDy"
-  var newPassword = password;
+  var newPassword = "";
   var shift = Math.abs(Math.ceil(Math.random() * 25));
   var shifted = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+  var nums = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+  // console.log(`Password ${password} shifted by ${shift}, length: ${password.length}`);
   for (var i = 0; i < password.length; i++) {
-    newPassword[i] = password[password.length - 1 - i];
 
-    const char = newPassword.charAt(i);
-    if (char === char.toUpperCase()) {
-      newPassword[i] = shifted[(i + shift) % 26].toLowerCase();
-    } else if (char === char.toLowerCase()) {
-      newPassword[i] = shifted[(i + shift) % 26].toUpperCase();
-    }
+    const char = password[password.length - 1 - i];
     if (char >= '0' && char <= '9') {
-      var nums = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
-      newPassword[i] = nums[parseInt(char)];
+      newPassword += nums[parseInt(char)];
+    } else if (char >= 'A' && char <= 'Z') {
+      newPassword += shifted[(shifted.indexOf(char.toLowerCase()) + shift) % 26].toLowerCase();
+    } else if (char >= 'a' && char <= 'z') {
+      newPassword += shifted[(shifted.indexOf(char) + shift) % 26].toUpperCase();
+    } else {
+      newPassword += char;
     }
   }
-  console.log(newPassword);
+  newPassword = newPassword.slice(0, 5 % password.length) + `${shift}.` + newPassword.slice(5 % password.length);
   return newPassword;
 }
 
-var createRow = (username, password, row) => {
+var _getPassword = (key) => {
+  // "536DO3.OLQDy" -> 3: "536ALLINAv" -> "463ALLINAv" -> "463allinaV" -> "Vanilla364"
+  var s = key.slice(5).indexOf('.') + 5;
+  var shift = parseInt(key.slice(5, s));
+  var shifted = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+  var nums = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+  key = key.slice(0, 5) + key.slice(s + 1);
+  console.log(`Shift: ${shift}, Key: ${key}`);
+  var password = "";
+  for (var i = 0; i < key.length; i++) {
+    const char = key[key.length - 1 - i]; // reversed again
+    if (char >= '0' && char <= '9') {
+      password += nums[parseInt(char)];
+    } else if (char >= 'A' && char <= 'Z') {
+      password += shifted[(shifted.indexOf(char.toLowerCase()) - shift + 26) % 26].toLowerCase();
+    } else if (char >= 'a' && char <= 'z') {
+      password += shifted[(shifted.indexOf(char) - shift + 26) % 26].toUpperCase();
+    } else {
+      password += char;
+    }
+  }
+  console.log(`Password: ${password}`);
+  return password;
+}
+
+var createRow = (username, password, secure, row) => {
+  if (typeof secure === "boolean" && secure) password = _getPassword(password);
   if (typeof row === "undefined") row = document.createElement("tr");
   if (typeof password === "undefined" && typeof username === "string" && username === "new") {
     row.id = "last";
@@ -77,8 +100,9 @@ var addUser = () => {
       infoAlert.classList.add("collapse");
     }
   }
-  createRow(username, password, lastRow);
-  Users[++Users._length] = { name: username, key: secure(password) };
+  createRow(username, password, false, lastRow);
+  Users[Users._length++] = { name: username, key: secure(password) };
+  Users._empty = false;
   localStorage.setItem("Users", JSON.stringify(Users));
   var userList = document.getElementById("user-list");
   userList.appendChild(createRow("new"));
@@ -94,9 +118,7 @@ var newUser = () => {
   // create a new user, and wait for the input to be filled
   // create a new row behind plus button, and increase plus button index
   var lastRow = document.getElementById("last");
-  lastRow.innerHTML = `<form>
-  <td><input type="text" id="username"></td><td><input type="password" id="password"></td><td><button class="btn" id="add">Add</button></td>
-  </form>`;
+  lastRow.innerHTML = `<td><input type="text" id="username"></td><td><input type="password" id="password" autocomplete="new-password"></td><td><button class="btn" id="add">Add</button></td>`;
   setupAdd();
 }
 
@@ -104,17 +126,18 @@ var setupNew = () => {
   var newUserEl = document.getElementById("new-user");
   newUserEl.addEventListener("click", newUser);
 }
-setupNew();
 
-var loadList = () => {
-  if (Users._empty) return;
+var loadTable = () => {
   var userList = document.getElementById("user-list");
-  var username, password = "";
-  for (var i = 0; i < Users._length; i++) {
-    username = Users[i].name;
-    password = Users[i].key;
-    userList.appendChild(createRow(username, password));
+  if (!Users._empty) {
+    var username, password = "";
+    for (var i = 0; i < Users._length; i++) {
+      username = Users[i].name;
+      password = Users[i].key;
+      userList.appendChild(createRow(username, password, true));
+    }
   }
   userList.appendChild(createRow("new"));
+  setupNew();
 }
-loadList();
+loadTable();
