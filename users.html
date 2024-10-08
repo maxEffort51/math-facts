@@ -5,8 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="main.css">
-  <link rel="stylesheet" href="options.css">
-  <link rel="stylesheet" href="report.css">
   <title>Users - Math Facts</title>
 </head>
 
@@ -33,21 +31,28 @@
 
   <div class="container-fluid align-middle me-auto">
     <h1 class="center">Multiple Users</h1>
-    <div class="center option">
+    <div class="center">
       <p>Add multiple user accounts per device below.</p>
-      <table id="user-list">
-        <tr>
-          <th>Username</th>
-          <th>Password</th>
-          <th>Modify</th>
-        </tr>
-        <tr id="last">
-          <td>
-            <button id="new-user" class="btn">+</button>
-          </td>
-          <td></td>
-          <td></td>
-        </tr>
+      <div class="alert alert-danger mb-2 p-2 px-3" id="process-info" role="alert">
+        <p class="mb-0"> You didn't fill out both of the required fields!</p>
+      </div>
+      <table class="table table-responsive table-striped" style="width: 525px">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Password</th>
+            <th scope="col">Modify</th>
+          </tr>
+        </thead>
+        <tbody id="user-list">
+          <tr id="last">
+            <td>
+              <button id="new-user" class="btn">+</button>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
