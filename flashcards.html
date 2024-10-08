@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="redirect.js"></script>
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="flashcard.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -24,12 +25,13 @@
       </ul>
       <ul class="navbar-nav nav-r mt-1">
         <li class="nav-item p-1">
-          <a class="nav-link" href="users.html">Users</a>
+          <a class="nav-link" href="users.html"></a>
         </li>
       </ul>
     </div>
-    </div>
   </nav>
+
+  <script type="module" src="navbar-respond.js"></script>
 
   <div class="container-fluid center">
     <div class="card center card-border1">
@@ -60,11 +62,13 @@
 
   <footer class="container-fluid footer">© 2024 Terry Family. All rights reserved.</footer>
 
+  <script type="module" src="helper.js"></script>
   <script src="https://code.responsivevoice.org/responsivevoice.js?key=o5C2RKed"></script>
   <script type="module" src="handle-input.js"></script>
   <script type="module" src="handle-flashcards.js"></script>
   <script>
     document.getElementsByTagName('footer')[0].value = `© ${new Date().getFullYear()} Terry Family. All rights reserved. `;
+    // Activate the tooltip
     document.addEventListener('DOMContentLoaded', function () {
       var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
       var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

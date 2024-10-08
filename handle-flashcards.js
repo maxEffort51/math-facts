@@ -2,16 +2,6 @@
 // Set up the variables for generating the Problem Set
 import Problems from './Problems.json' with { type: "json" };
 
-var flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
-
-if (!(typeof flashcardSession.valid === "string" && flashcardSession.valid === "Activity")) {
-  var redirect = window.location.origin + window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'));
-  window.location.href = redirect;
-} else {
-  flashcardSession.valid = "Report";
-  localStorage.setItem('FlashcardSession', JSON.stringify(flashcardSession));
-}
-
 var setProblemTime = () => {
   flashcardSession.timers.problemStartTimestamp = Date.now();
 
