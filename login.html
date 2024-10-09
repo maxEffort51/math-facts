@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="redirect.js"></script>
   <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="user.css">
   <title>Login - Math Facts</title>
 </head>
 
@@ -34,8 +35,11 @@
 
   <div class="container-fluid align-middle me-auto">
     <h1 class="center">Log In</h1>
-    <div class="center option">
-      <form>
+    <div class="center">
+      <div class="alert alert-danger mb-2 p-2 px-3 collapse" id="process-info" role="alert">
+        <p class="mb-0">You didn't fill out both of the required fields!</p>
+      </div>
+      <form class="form">
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" class="form-control" id="username" placeholder="Enter username">
@@ -44,7 +48,7 @@
           <label for="password">Password</label>
           <input type="password" class="form-control" id="password" placeholder="Password">
         </div>
-        <button type="submit" class="btn btn-primary">Log In</button>
+        <button id="login" type="submit" class="btn btn-primary btn-submit">Log In</button>
       </form>
     </div>
   </div>
@@ -52,6 +56,7 @@
   <footer class="container-fluid footer">© 2024 Terry Family. All rights reserved.</footer>
 
   <script type="module" src="helper.js"></script>
+  <script type="module" src="login.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>

@@ -2,9 +2,9 @@
 // When the page loads, check if the Results section of the Flashcard Session object is filled, and if isOutdated is false
 //  if true: show the popup with all the relevant data, and change isOutdated to false
 
-import UserData from './UserData.json' with { type: 'json' };
+import { getUserData, setUserData } from './helper.js';
 
-var userData = JSON.parse(localStorage.getItem('UserData'));
+var UserData = getUserData();
 
 var flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
 
@@ -24,40 +24,27 @@ var secString = (milliseconds) => {
 }
 
 var updateGrid = () => {
-  if (Object.is(userData, null)) { // stored UserData object doesn't exist
-    userData = UserData;
-  }
-  // go through flashcardSession.problemSet.tested and set the states of userData
   var tested = flashcardSession.problemSet.tested;
   for (var i = 0; i < tested.length; i++) {
     var q = tested[i].q;
-
-    // console.log(tested[i]);
-
     if (q.indexOf('+') !== -1) {
-      userData.add[q] = tested[i].state;
+      UserData.add[q] = tested[i].state;
     } else if (q.indexOf('-') !== -1) {
-      userData.sub[q] = tested[i].state;
+      UserData.sub[q] = tested[i].state;
     } else if (q.indexOf('×') !== -1) {
-      userData.mult[q] = tested[i].state;
+      UserData.mult[q] = tested[i].state;
     } else if (q.indexOf('÷') !== -1) {
-      userData.div[q] = tested[i].state;
+      UserData.div[q] = tested[i].state;
     }
   }
-
-  // console.log(userData);
-
-  localStorage.setItem("UserData", JSON.stringify(userData));
+  setUserData(UserData);
 };
 
 var tryShowPopup = () => {
   var results = flashcardSession.results;
   results.isOutdated = true;
-  // console.log(typeof results.totalActivityTime !== "undefined");
-  // console.log(flashcardSession.valid === "Report");
   if (typeof results.totalActivityTime !== "undefined" && flashcardSession.valid === "Report") {
     var popupEl = document.getElementById('stats-popup');
-    //console.log(popupEl.querySelector('#avg-time'));
     popupEl.querySelector('#percentage').innerText = `${results.percentageProblemsCorrect}%`;
     popupEl.querySelector('#correct-total').getElementsByTagName('span')[0].innerText = `${results.totalProblemsCorrect}`;
     popupEl.querySelector('#correct-total').getElementsByTagName('span')[1].innerText = `${results.totalProblemsTested}`;
@@ -65,7 +52,6 @@ var tryShowPopup = () => {
     popupEl.querySelector('#avg-time').getElementsByTagName('span')[0].innerText = `${secString(results.averageProblemTime)}`;
     var cats = popupEl.querySelector('#categories').getElementsByTagName('span');
 
-    // display the selected categories
     var catNames = ["add", "sub", "mult", "div"];
     var sessionCats = flashcardSession.choices.categories;
     for (var i = 0; i < cats.length; i++) {

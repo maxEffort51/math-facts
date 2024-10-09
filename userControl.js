@@ -1,4 +1,4 @@
-import { checkRestricted, getPassword, secure, createRow, getUsers, cookies } from './helper.js';
+import { checkRestricted, getPassword, secure, createRow, getUsers, getUserData, cookies } from './helper.js';
 import { redirectUser } from './redirect.js';
 
 var Users = getUsers();
@@ -139,10 +139,8 @@ var loginUser = (e) => {
   if (Users._loggedin === username && e.target.innerText === "User") {
     redirectUser("account");
   } else {
+    cookies.generateData(username).delete().if(Users._loggedin !== "", "delete", Users._loggedin).create(username, Users[i].teacher ? "teacher" : "student", 7);
     Users._loggedin = username;
-    const sevenDays = new Date();
-    sevenDays.setTime(sevenDays.getTime() + (7 /* days */ * 24 * 60 * 60 * 1000));
-    document.cookie = `${username}=${Users[i].teacher ? "teacher" : "student"}; expires=${sevenDays.toUTCString()}; Secure`;
     localStorage.setItem("Users", JSON.stringify(Users));
     e.target.innerText = "User";
   }

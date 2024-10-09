@@ -1,5 +1,7 @@
 /* ========== HELPER FUNCTIONS ========== */
 
+import UserData from './UserData.json' with {type: 'json' };
+
 // Generate a Users object
 var generate = () => {
   var tempUsers = {
@@ -25,9 +27,20 @@ var getUsers = () => {
   return users;
 }
 
-var updateUsers = () => Users = JSON.parse(localStorage.getItem("Users"));;
+var updateUsers = () => Users = JSON.parse(localStorage.getItem("Users"));
 
 var Users = getUsers();
+
+var findUsername = (name) => {
+  var i = -1;
+  Object.keys(Users).some(key => {
+    if (key.slice(0, 1) !== "_" && name === Users[key].name) {
+      i = key;
+      return true;
+    }
+  });
+  return i;
+}
 
 // Check if the Users page should be restricted, and updates it accordingly
 var checkRestricted = () => {
@@ -149,6 +162,24 @@ var c_loggedIn = (username) => {
   return exists && value;
 }
 
+var c_generateData = (name) => {
+  var location = `UserData:${name}`;
+  var newData = getUserData();
+  if (existsInStorage("UserData")) {
+    this.clearInLocalStorage("UserData");
+  }
+  localStorage.setItem(location, newData);
+  return this;
+}
+
+var c_clear = () => {
+  document.cookie.split(";").forEach(c => {
+    var cNoSpace = c.replace(/^ +/, "");
+    document.cookie = cNoSpace.replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+  });
+  return this;
+}
+
 var c_get = (name) => {
   var cookies = document.cookie.split('; ');
   var names = cookies.map(value => value.substring(0, value.indexOf("=")));
@@ -176,6 +207,7 @@ var c_get = (name) => {
       newCookie[partNames[i]] = partValues[i];
     }
   }
+  newCookie.cookies = this;
   return newCookie;
 }
 
@@ -189,7 +221,9 @@ var c_exists = (name) => {
 }
 var c_changeValue = (name, value) => {
   document.cookie = `${name}=${value}`;
+  return this;
 }
+
 var c_create = (name, value, daysExpire) => {
   if (typeof expires === "undefined") {
     document.cookie = `${name}=${value}; Secure`;
@@ -198,9 +232,22 @@ var c_create = (name, value, daysExpire) => {
     days.setTime(sevenDays.getTime() + (daysExpire * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${value}; expires=${days.toUTCString()}; Secure`;
   }
+  return this;
 }
+
 var c_delete = (name) => {
+  if (typeof name === "undefined") {
+    localStorage.removeItem("UserData");
+    return;
+  }
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+  localStorage.removeItem(`UserData:${name}`);
+  return this;
+}
+
+var c_if = (bool, cookieFunc, ...parameters) => {
+  if (bool) this[cookieFunc](...parameters);
+  return this;
 }
 
 var bake = () => {
@@ -213,15 +260,45 @@ var bake = () => {
   // list: returns an array of all cookies, parsed as if you called the get() function
   var batter = {
     loggedIn: c_loggedIn,
+    generateData: c_generateData,
     exists: c_exists,
     changeValue: c_changeValue,
     get: c_get,
+    clear: c_clear,
     create: c_create,
-    delete: c_delete
+    delete: c_delete,
+    if: c_if
   }
   return batter;
 }
 
 var cookies = bake();
 
-export { checkRestricted, repeatingUsername, getPassword, secure, createRow, getUsers, cookies };
+var userLoggedIn = (name) => {
+  return Users._loggedin !== "" && cookies.loggedIn(Users._loggedin) ? Users._loggedin : false;
+}
+
+var getUserData = () => {
+  var location = "UserData";
+  if (userLoggedIn(Users._loggedin)) {
+    // The User is logged in, try to get UserData:_username-here_
+    location = `UserData:${Users._loggedin}`;
+  }
+  var local = JSON.parse(localStorage.getItem(location));
+  if (Object.is(local, null)) {
+    // nothing exists at that location, create a new empty UserData instance
+    local = { ...UserData };
+  }
+  return local;
+}
+
+var setUserData = (value) => {
+  var location = "UserData";
+  if (userLoggedIn(Users._loggedin)) {
+    // The User is logged in, try to get UserData:_username-here_
+    location = `UserData:${Users._loggedin}`;
+  }
+  localStorage.setItem(location, JSON.stringify(value));
+}
+
+export { checkRestricted, findUsername, repeatingUsername, getPassword, secure, createRow, getUsers, getUserData, setUserData, cookies };

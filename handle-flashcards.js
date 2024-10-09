@@ -2,6 +2,8 @@
 // Set up the variables for generating the Problem Set
 import Problems from './Problems.json' with { type: "json" };
 
+var flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
+
 var setProblemTime = () => {
   flashcardSession.timers.problemStartTimestamp = Date.now();
 

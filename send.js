@@ -5,12 +5,13 @@
 // 2 update Choices subobject
 // 3 store Flashcard Session object in local storage
 
-import Session from './FlashcardSession.json' with { type: "json" }; // 1
+import Session from './FlashcardSession.json' with { type: "json" };
+import { redirectUser } from './redirect.js';
 
 var flashcardSession = structuredClone(Session);
 
 document.getElementById("submit").onclick = () => {
-  if (typeof localStorage.getItem("FlashcardSession") !== "undefined") localStorage.removeItem("FlashcardSession"); // 1.5
+  if (typeof localStorage.getItem("FlashcardSession") !== "undefined") localStorage.removeItem("FlashcardSession");
 
   //console.log(flashcardSession);
 
@@ -20,11 +21,9 @@ document.getElementById("submit").onclick = () => {
 
   //console.log(flashcardSession);
 
-  localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession)); // 3
+  localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
 
-  var redirect = window.location.origin + window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'));
-  //console.log(redirect);
-  window.location.href = `${redirect}/flashcards.html`;
+  redirectUser("flashcards");
 }
 
 var updatedSession = (session) => {
