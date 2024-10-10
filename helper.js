@@ -44,6 +44,16 @@ var findUsername = (name) => {
   return i;
 }
 
+var updateUserIndexes = (i) => {
+  Users = getUsers();
+  Object.keys(Users).forEach(key => {
+    if (!isNaN(parseInt(key)) && parseInt(key) > i) {
+      Users[key - 1] = Users[key];
+      Users[key] = undefined;
+    }
+  });
+}
+
 // Check if the Users page should be restricted, and updates it accordingly
 var checkRestricted = () => {
   updateUsers();
@@ -134,7 +144,6 @@ var secure = (key) => {
 
 // Create a new row or complete the row creation process
 var createRow = (auth, users, i, secure, row) => {
-  console.log(users[i]);
   var password;
   if (typeof row === "undefined") row = document.createElement("tr");
   if (typeof users === "string" && users === "new") {
@@ -143,7 +152,7 @@ var createRow = (auth, users, i, secure, row) => {
   } else {
     password = users[i].key;
     if (typeof secure === "boolean" && secure) password = getPassword(`${auth}${password}`);
-    row.innerHTML = `<td><span>${users[i].name}</span></td><td><span>${password}</span></td><td><button class="btn" id="edit">#</button><button class="btn" id="teacher">${users[i].teacher ? "Teacher" : "Student"}</button><button class="btn" id="delete">X</button><button class="btn btn-primary" id="login">${users._loggedin === users[i].name ? "User" : "Log In"}</button></td>`;
+    row.innerHTML = `<td><span>${users[i].name}</span></td><td><span>${password}</span></td><td><button class="btn" id="edit">#</button><button class="btn" id="teacher">${users[i].teacher ? "Teacher" : "Student"}</button><button class="btn" id="delete">X</button><button class="btn btn-primary login">${users._loggedin === users[i].name ? "User" : "Log In"}</button></td>`;
     row.id = i;
   }
   return row;
@@ -161,11 +170,12 @@ var setUserData = (value) => {
   localStorage.setItem(location, JSON.stringify(value));
 }
 
-var getUserData = (user) => {
+var getUserData = (user, loggingIn) => {
   Users = JSON.parse(localStorage.getItem("Users"));
   var location = "UserData";
   if (typeof user === "undefined") user = Users._loggedin;
-  if (Users._loggedin === user) {
+  var logMaybe = (typeof loggingIn !== "undefined" && loggingIn) || typeof loggingIn === "undefined";
+  if (Users._loggedin === user && logMaybe) {
     // The User is logged in, try to get UserData:_username-here_
     location = `UserData:${user}`;
   }
@@ -183,4 +193,4 @@ var renameUserData = (user, newUser) => {
   localStorage.setItem(`UserData:${newUser}`, JSON.stringify(data));
 }
 
-export { checkRestricted, findUsername, repeatingUsername, getPassword, secure, createRow, getUsers, getUserData, setUserData, renameUserData };
+export { updateUserIndexes, checkRestricted, findUsername, repeatingUsername, getPassword, secure, createRow, getUsers, getUserData, setUserData, renameUserData };

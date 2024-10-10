@@ -1,4 +1,5 @@
-import { checkRestricted, getPassword, secure, createRow, getUsers, getUserData } from './helper.js';
+import { navbarRespond } from './navbar-respond.js';
+import { updateUserIndexes, checkRestricted, getPassword, secure, createRow, getUsers, getUserData } from './helper.js';
 import { redirectUser } from './redirect.js';
 import cookies from './Cookies.js';
 
@@ -19,7 +20,7 @@ var setupModify = (row) => {
   setup(row.querySelector('#edit'), editUser);
   setup(row.querySelector('#teacher'), teacherUser);
   setup(row.querySelector('#delete'), deleteUser);
-  setup(row.querySelector('#login'), loginUser);
+  setup(row.querySelector('.login'), loginUser);
 }
 
 var setupAdd = () => {
@@ -51,15 +52,6 @@ var authenticate = (username, password, index) => {
     }
   }
   return false;
-}
-
-var updateUserIndexes = (i) => {
-  Object.keys(Users).forEach(key => {
-    if (!isNaN(parseInt(key)) && parseInt(key) > i) {
-      Users[key - 1] = Users[key];
-      Users[key] = undefined;
-    }
-  });
 }
 
 /* ------ DELETE USER ------ */
@@ -148,8 +140,13 @@ var loginUser = (e) => {
   } else {
     Users._loggedin = username;
     localStorage.setItem("Users", JSON.stringify(Users));
-    cookies.generateData(username).delete().create(username, Users[i].teacher ? "teacher" : "student", 7);
+    cookies.generateData(username, true).delete().create(username, Users[i].teacher ? "teacher" : "student", 7);
+    var loginBtns = document.getElementsByClassName("login");
+    for (var i = 0; i < loginBtns.length; i++) {
+      loginBtns[i].innerText = "Log In";
+    }
     e.target.innerText = "User";
+    navbarRespond();
   }
 }
 

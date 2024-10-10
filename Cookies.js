@@ -37,9 +37,9 @@ Bake.prototype.loggedIn = function (username) {
   var i = l.value;
   return values[i] === "teacher" || values[i] === "student";
 }
-Bake.prototype.generateData = function (name) {
+Bake.prototype.generateData = function (name,loggingIn) {
   var location = `UserData:${name}`;
-  var newData = getUserData(name);
+  var newData = getUserData(name,loggingIn);
   if (!Object.is(localStorage.getItem("UserData"), null)) {
     localStorage.removeItem("UserData");
   }
@@ -79,7 +79,7 @@ Bake.prototype.get = function (name) {
 }
 Bake.prototype.string = function (obj) {
   // key, value, expires, etc.
-  return `${obj.key}=${typeof obj.value !== undefined ? obj.value : ""}; expires=${typeof obj.expires !== "undefined" ? obj.expires : ""}; Secure`;
+  return `${obj.key}=${typeof obj.value !== "undefined" ? obj.value : ""}; expires=${typeof obj.expires !== "undefined" ? obj.expires : ""}; Secure`;
 }
 Bake.prototype.exists = function (name) {
   var names = document.cookie.split('; ').map(value => value.substring(0, value.indexOf("=")));

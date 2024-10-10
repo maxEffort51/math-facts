@@ -15,7 +15,7 @@ var _getUsers = () => {
   localStorage.setItem("Users", JSON.stringify(users));
   return users;
 }
-var Users = _getUsers();
+var Users;
 
 var cookies = {
   loggedIn: (username) => {
@@ -65,6 +65,7 @@ var cookies = {
 }
 
 var navbarRespond = () => {
+  Users = _getUsers();
   var usersItem = document.getElementsByClassName('nav-item')[2];
   var username = Users._loggedin;
   var href = "users";
@@ -80,3 +81,5 @@ var navbarRespond = () => {
   usersItem.innerHTML = `<a class="nav-link" href="${href}.html">${text}</a>`;
 }
 navbarRespond();
+
+export { navbarRespond };

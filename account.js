@@ -6,8 +6,8 @@
 // Log Out: #logout
 // Delete Account: #delete
 
-import { getUsers, getPassword, secure, findUsername, renameUserData } from './helper.js';
-import { updateUserIndexes } from './userControl.js';
+import { navbarRespond } from './navbar-respond.js';
+import { updateUserIndexes, getUsers, getPassword, secure, findUsername, renameUserData } from './helper.js';
 import cookies from './Cookies.js';
 
 var Users = getUsers();
@@ -23,6 +23,7 @@ var changeUsername = () => {
   cookies.rename(Users._loggedin, newName);
   renameUserData(Users._loggedin, newName);
   Users._loggedin = newName;
+  navbarRespond();
   localStorage.setItem("Users", JSON.stringify(Users));
 };
 
