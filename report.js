@@ -3,6 +3,7 @@
 //  if true: show the popup with all the relevant data, and change isOutdated to false
 
 import { getUserData, setUserData } from './helper.js';
+import { generateGrid } from './grid.js';
 
 var UserData = getUserData();
 
@@ -41,29 +42,32 @@ var updateGrid = () => {
 };
 
 var tryShowPopup = () => {
-  var results = flashcardSession.results;
-  results.isOutdated = true;
-  if (typeof results.totalActivityTime !== "undefined" && flashcardSession.valid === "Report") {
-    var popupEl = document.getElementById('stats-popup');
-    popupEl.querySelector('#percentage').innerText = `${results.percentageProblemsCorrect}%`;
-    popupEl.querySelector('#correct-total').getElementsByTagName('span')[0].innerText = `${results.totalProblemsCorrect}`;
-    popupEl.querySelector('#correct-total').getElementsByTagName('span')[1].innerText = `${results.totalProblemsTested}`;
-    popupEl.querySelector('#total-time').getElementsByTagName('span')[0].innerText = `${timeString(results.totalActivityTime)}`;
-    popupEl.querySelector('#avg-time').getElementsByTagName('span')[0].innerText = `${secString(results.averageProblemTime)}`;
-    var cats = popupEl.querySelector('#categories').getElementsByTagName('span');
+  if (!Object.is(flashcardSession, null)) {
+    var results = flashcardSession.results;
+    if (typeof results.totalActivityTime !== "undefined" && flashcardSession.valid === "Report" && !results.isOutdated) {
+      var popupEl = document.getElementById('stats-popup');
+      popupEl.querySelector('#percentage').innerText = `${results.percentageProblemsCorrect}%`;
+      popupEl.querySelector('#correct-total').getElementsByTagName('span')[0].innerText = `${results.totalProblemsCorrect}`;
+      popupEl.querySelector('#correct-total').getElementsByTagName('span')[1].innerText = `${results.totalProblemsTested}`;
+      popupEl.querySelector('#total-time').getElementsByTagName('span')[0].innerText = `${timeString(results.totalActivityTime)}`;
+      popupEl.querySelector('#avg-time').getElementsByTagName('span')[0].innerText = `${secString(results.averageProblemTime)}`;
+      var cats = popupEl.querySelector('#categories').getElementsByTagName('span');
 
-    var catNames = ["add", "sub", "mult", "div"];
-    var sessionCats = flashcardSession.choices.categories;
-    for (var i = 0; i < cats.length; i++) {
-      if (sessionCats[catNames[i]]) cats[i].classList.add("checked");
+      var catNames = ["add", "sub", "mult", "div"];
+      var sessionCats = flashcardSession.choices.categories;
+      for (var i = 0; i < cats.length; i++) {
+        if (sessionCats[catNames[i]]) cats[i].classList.add("checked");
+      }
+
+      var statsPopup = new bootstrap.Modal(popupEl, { backdrop: 'static' });
+      statsPopup.show(); // Show modal on page load
+      updateGrid();
     }
-
-    var statsPopup = new bootstrap.Modal(popupEl, { backdrop: 'static' });
-    statsPopup.show(); // Show modal on page load
+    results.isOutdated = true;
+    flashcardSession.valid = "Debug";
+    localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
   }
-  updateGrid();
-  flashcardSession.valid = "Debug";
-  localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
+  // Loops.same(generateGrid,'+','-','*','/') -> same as below
   generateGrid('+');
   generateGrid('-');
   generateGrid('*');

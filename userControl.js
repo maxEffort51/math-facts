@@ -1,5 +1,6 @@
-import { checkRestricted, getPassword, secure, createRow, getUsers, getUserData, cookies } from './helper.js';
+import { checkRestricted, getPassword, secure, createRow, getUsers, getUserData } from './helper.js';
 import { redirectUser } from './redirect.js';
+import cookies from './Cookies.js';
 
 var Users = getUsers();
 
@@ -52,27 +53,32 @@ var authenticate = (username, password, index) => {
   return false;
 }
 
-/* ------ DELETE USER ------ */
-
-var deleteUser = (e) => {
-  var row = e.target.parentElement.parentElement;
-  var i = row.id;
-  var username = row.firstElementChild.firstElementChild.value;
-  if (Users._loggedin === username) {
-    Users._loggedin = "";
-    checkRestricted();
-  }
-  delete Users[i];
-  row.remove();
-  Users._length--;
-  if (Users._length == 0) Users._empty = true;
-
+var updateUserIndexes = (i) => {
   Object.keys(Users).forEach(key => {
     if (!isNaN(parseInt(key)) && parseInt(key) > i) {
       Users[key - 1] = Users[key];
       Users[key] = undefined;
     }
   });
+}
+
+/* ------ DELETE USER ------ */
+
+var deleteUser = (e) => {
+  var row = e.target.parentElement.parentElement;
+  var i = row.id;
+  var username = row.firstElementChild.firstElementChild.innerText;
+  if (Users._loggedin === username) {
+    cookies.delete(username);
+    Users._loggedin = "";
+    checkRestricted();
+  }
+  localStorage.removeItem(`UserData:${username}`); // clear user data
+  delete Users[i]; // clear Users data
+  row.remove();
+  Users._length--;
+  if (Users._length == 0) Users._empty = true;
+  updateUserIndexes(i);
   document.getElementById("user-list").innerHTML = "";
   loadTable();
   localStorage.setItem("Users", JSON.stringify(Users));
@@ -87,23 +93,24 @@ var teacherUser = (e) => {
   if (Users[i].teacher) {
     Users[i].teacher = false;
     if (cookies.loggedIn(Users[i].name)) {
-      cookies.changeValue(Users[i].name, "student");
+      cookies.set(Users[i].name, "student");
     }
+    localStorage.setItem("Users", JSON.stringify(Users));
     checkRestricted();
     e.target.innerText = "Student";
     row.classList.remove('table-success');
   } else {
     Users[i].teacher = true;
     if (cookies.loggedIn(Users[i].name)) {
-      cookies.changeValue(Users[i].name, "teacher");
+      cookies.set(Users[i].name, "teacher");
     }
     Users._restricted = true;
     e.target.innerText = "Teacher";
     if (!row.classList.contains('table-success')) {
       row.classList.add('table-success');
     }
+    localStorage.setItem("Users", JSON.stringify(Users));
   }
-  localStorage.setItem("Users", JSON.stringify(Users));
 }
 
 /* ------ SAVE USER ------ */
@@ -139,9 +146,9 @@ var loginUser = (e) => {
   if (Users._loggedin === username && e.target.innerText === "User") {
     redirectUser("account");
   } else {
-    cookies.generateData(username).delete().if(Users._loggedin !== "", "delete", Users._loggedin).create(username, Users[i].teacher ? "teacher" : "student", 7);
     Users._loggedin = username;
     localStorage.setItem("Users", JSON.stringify(Users));
+    cookies.generateData(username).delete().create(username, Users[i].teacher ? "teacher" : "student", 7);
     e.target.innerText = "User";
   }
 }
@@ -176,10 +183,7 @@ var newUser = () => {
 var loadTable = () => {
   var userList = document.getElementById("user-list");
   if (!Users._empty) {
-    var username, password = "";
     for (var i = 0; i < Users._length; i++) {
-      username = Users[i].name;
-      password = Users[i].key;
       var row = createRow("@59n&Ai4XGpzxTHg", Users, i, true);
       if (Users[i].teacher) row.classList.add('table-success');
       userList.appendChild(row);
@@ -191,3 +195,5 @@ var loadTable = () => {
 }
 
 loadTable();
+
+export { updateUserIndexes };

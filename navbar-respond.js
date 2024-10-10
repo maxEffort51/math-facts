@@ -70,7 +70,7 @@ var navbarRespond = () => {
   var href = "users";
   var text = "Users";
   if (username !== "" && cookies.loggedIn(username) && cookies.get(username).value !== "teacher") {
-    href = "account";
+    if (Users._restricted) href = "account";
     text = username.substring(0, 1).toUpperCase() + username.substring(1);
   }
   if ((!cookies.loggedIn(username) || username === "") && Users._restricted) {

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="redirect.js"></script>
   <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="user.css">
   <title>Account - Math Facts</title>
 </head>
 
@@ -33,39 +34,41 @@
   <script type="module" src="navbar-respond.js"></script>
 
   <div class="container-fluid align-middle me-auto">
-    <h1 class="center"><span id="username"></span>Account</h1>
-    <div class="center option">
-      <h2>Username</h2>
-      <form>
+    <h1 class="center">Account</h1>
+    <div class="container">
+      <form class="py-2">
         <div class="form-group">
           <label for="username">Change Username</label>
-          <input type="text" class="form-control" id="username" placeholder="Enter username" value="Bob48e">
+          <input type="text" class="form-control" id="username" placeholder="Enter username" autocomplete="username">
         </div>
-        <h2>Rename Password</h2>
+        <h2 class="pt-1">Rename Password</h2>
         <div class="form-group">
           <label for="old-pass">Old Password</label>
-          <input type="password" class="form-control" id="old-pass" placeholder="Enter Password">
+          <input type="password" class="form-control" id="old-pass" placeholder="Enter Password"
+            autocomplete="current-password">
         </div>
         <div class="form-group">
           <label for="password">New Password</label>
-          <input type="password" class="form-control" id="password" placeholder="Enter New Password">
+          <input type="password" class="form-control" id="password" placeholder="Enter New Password"
+            autocomplete="new-password">
         </div>
         <div class="form-group">
           <label for="repeat-pass">Repeat Password</label>
-          <input type="password" class="form-control" id="repeat-pass" placeholder="Repeat">
+          <input type="password" class="form-control" id="repeat-pass" placeholder="Repeat" autocomplete="new-password">
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <div class="form-group d-flex flex-row justify-content-center mt-2">
+          <button type="submit" class="btn btn-primary mx-1" id="save">Save Changes</button>
+          <button id="logout" class="btn btn-primary mx-1">Log Out</button>
+          <button id="delete" class="btn btn-danger mx-1">Delete Account</button>
+        </div>
       </form>
-      <div class="form-group">
-        <button id="logout" class="btn btn-primary">Log Out</button>
-        <button id="delete" class="btn btn-danger">Delete Account</button>
-      </div>
     </div>
   </div>
 
   <footer class="container-fluid footer">© 2024 Terry Family. All rights reserved.</footer>
 
   <script type="module" src="helper.js"></script>
+  <script type="module" src="account.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>

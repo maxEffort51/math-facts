@@ -1,4 +1,4 @@
-import { getUsers, cookies } from './helper.js';
+import { getUsers } from './helper.js';
 
 var Users = getUsers();
 
