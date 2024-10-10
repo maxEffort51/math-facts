@@ -1,7 +1,7 @@
 import { getUserData } from './helper.js';
 
+// Make the tabs in the Progress page work
 var changeGrid = (to, arrFrom, iFrom) => {
-  ////console.log('changing to ' + to);
   var all = document.getElementsByClassName('grid');
   for (var i = 0; i < all.length; i++) {
     if (all[i].id === to && !all[i].classList.contains('show')) {
@@ -20,6 +20,7 @@ a[1].onclick = () => changeGrid('-', a, 1);
 a[2].onclick = () => changeGrid('*', a, 2);
 a[3].onclick = () => changeGrid('/', a, 3);
 
+// Generate all items for a certain grid on the Progress page
 var generateGrid = (to) => {
   var userArr;
   var UserData = getUserData();

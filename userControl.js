@@ -38,9 +38,9 @@ var authenticate = (username, password, index) => {
     infoAlert.classList.remove("collapse");
     infoAlert.firstElementChild.innerText = "You didn't fill out both of the required fields!";
     return true;
-  } else if (password.length < 8) {
+  } else if (password.length < 5) {
     infoAlert.classList.remove("collapse");
-    infoAlert.firstElementChild.innerText = "Your password needs to be at least 8 characters long!";
+    infoAlert.firstElementChild.innerText = "Your password needs to be at least 5 characters long!";
     return true;
   } else if (typeof index === "number" && repeatingUsername(username, index)) {
     infoAlert.classList.remove("collapse");

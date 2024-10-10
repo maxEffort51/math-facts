@@ -1,7 +1,3 @@
-
-// When the page loads, check if the Results section of the Flashcard Session object is filled, and if isOutdated is false
-//  if true: show the popup with all the relevant data, and change isOutdated to false
-
 import { getUserData, setUserData } from './helper.js';
 import { generateGrid } from './grid.js';
 
@@ -15,7 +11,7 @@ var timeString = (milliseconds) => {
   var min = (milliseconds / 1000) / 60;
 
   secs = (secs < 10 ? '0' + secs : secs);
-  //console.log(secs);
+
   return Math.floor(min) + ':' + secs;
 };
 

@@ -15,6 +15,7 @@ var generate = () => {
   return tempUsers;
 }
 
+// Get either an already existsing Users object or generate a new one
 var getUsers = () => {
   var users = JSON.parse(localStorage.getItem("Users"));
   if (Object.is(users, null)) {
@@ -105,12 +106,11 @@ var _secure = (password) => {
 // Reverse the secure function above, taking a hashed password and getting the true password
 var _getPassword = (key) => {
   // "536DO3.OLQDy" -> 3: "536ALLINAv" -> "463ALLINAv" -> "463allinaV" -> "Vanilla364"
-  var s = key.slice(5).indexOf('.') + 5;
+  var s = key.slice(4).indexOf('.') + 4;
   var shift = parseInt(key.slice(5, s));
   var shifted = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
   var nums = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
-  key = key.slice(0, 5) + key.slice(s + 1);
-  console.log(`Shift: ${shift}, Key: ${key}`);
+  key = key.slice(0, 4) + key.slice(s + 1);
   var password = "";
   for (var i = 0; i < key.length; i++) {
     const char = key[key.length - 1 - i]; // reversed again
@@ -124,25 +124,28 @@ var _getPassword = (key) => {
       password += char;
     }
   }
-  console.log(`Password: ${password}`);
   return password;
 }
 
+// A public function that regulates the getPassword function, requiring an auth code
 var getPassword = (key) => {
   var auth_code = key.substring(0, 16);
   if (auth_code === "@59n&Ai4XGpzxTHg") {
     return _getPassword(key.substring(16));
   }
+  return false;
 }
 
+// A public function that regulates the secure function
 var secure = (key) => {
   var auth_code = key.substring(0, 16);
   if (auth_code === "@59n&Ai4XGpzxTHg") {
     return _secure(key.substring(16));
   }
+  return false;
 }
 
-// Create a new row or complete the row creation process
+// A function that helps with the process of creating rows for the table on the Users page
 var createRow = (auth, users, i, secure, row) => {
   var password;
   if (typeof row === "undefined") row = document.createElement("tr");
@@ -158,8 +161,10 @@ var createRow = (auth, users, i, secure, row) => {
   return row;
 }
 
+// A simple function that checks if a user is logged in from the Users object and an expirable cookies object
 var userLoggedIn = (name) => Users._loggedin === name && cookies.loggedIn(name);
 
+// A function to set the UserData for whoever is logged in, or for a generic guest user
 var setUserData = (value) => {
   var location = "UserData";
   if (userLoggedIn(Users._loggedin)) {
@@ -170,6 +175,7 @@ var setUserData = (value) => {
   localStorage.setItem(location, JSON.stringify(value));
 }
 
+// A function to get the UserData of a certain user or the generic guest user, or to get the UserData of whoever is logged in
 var getUserData = (user, loggingIn) => {
   Users = JSON.parse(localStorage.getItem("Users"));
   var location = "UserData";
@@ -181,12 +187,13 @@ var getUserData = (user, loggingIn) => {
   }
   var local = JSON.parse(localStorage.getItem(location));
   if (Object.is(local, null)) {
-    // nothing exists at that location, create a new empty UserData instance
+    // Create a new empty UserData instance
     local = { ...UserData };
   }
   return local;
 }
 
+// A function rename a given user from the perspective of its associated UserData object
 var renameUserData = (user, newUser) => {
   var data = getUserData(user);
   localStorage.removeItem(`UserData:${user}`);

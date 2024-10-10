@@ -2,9 +2,11 @@ import { getUserData } from './helper.js';
 
 var Bake = function () { };
 
+// A function that returns the cookie index for a given name - not the index in Users
 Bake.prototype.where = function (name) {
   var names = document.cookie.split('; ').map(value => value.substring(0, value.indexOf("=")));
   var i = -1;
+  // Whenever you see comments like this, realize it's just a future idea for a way to make my life easier
   // Loops.for(names.length,(ind) => { ... }) - start?,stop,iterate?,callback
   for (var ind = 0; ind < names.length; ind++) {
     if (names[ind] === name) {
@@ -13,6 +15,7 @@ Bake.prototype.where = function (name) {
   }
   return i;
 }
+// A function that returns more information than just the index, including a function that returns whether the index is valid (not -1)
 Bake.prototype.locate = function (name) {
   var names = document.cookie.split('; ').map(value => value.substring(0, value.indexOf("=")));
   var i = -1;
@@ -29,6 +32,7 @@ Bake.prototype.locate = function (name) {
     cookies: this,
   };
 }
+// A function that checks whether the user is logged in from the perspective of the cookies
 Bake.prototype.loggedIn = function (username) {
   var names = document.cookie.split('; ').map(value => value.substring(0, value.indexOf("=")));
   var values = document.cookie.split('; ').map(value => value.substring(value.indexOf("=") + 1));
@@ -37,15 +41,16 @@ Bake.prototype.loggedIn = function (username) {
   var i = l.value;
   return values[i] === "teacher" || values[i] === "student";
 }
-Bake.prototype.generateData = function (name,loggingIn) {
+Bake.prototype.generateData = function (name, loggingIn) {
   var location = `UserData:${name}`;
-  var newData = getUserData(name,loggingIn);
+  var newData = getUserData(name, loggingIn);
   if (!Object.is(localStorage.getItem("UserData"), null)) {
     localStorage.removeItem("UserData");
   }
   localStorage.setItem(location, JSON.stringify(newData));
   return this;
 }
+// Clear all cookies
 Bake.prototype.clear = function () {
   document.cookie.split(";").forEach(c => {
     var cNoSpace = c.replace(/^ +/, "");
@@ -53,6 +58,7 @@ Bake.prototype.clear = function () {
   });
   return this;
 }
+// Get a cookie, in a parsed form with attributes like .key (for the name), .value, and .expires
 Bake.prototype.get = function (name) {
   var cookies = document.cookie.split('; ');
   var names = cookies.map(value => value.substring(0, value.indexOf("=")));
@@ -77,10 +83,12 @@ Bake.prototype.get = function (name) {
   newCookie.cookies = this;
   return newCookie;
 }
+// Turns a cookie object into a string
 Bake.prototype.string = function (obj) {
   // key, value, expires, etc.
   return `${obj.key}=${typeof obj.value !== "undefined" ? obj.value : ""}; expires=${typeof obj.expires !== "undefined" ? obj.expires : ""}; Secure`;
 }
+// Checks if a cookie with a given name exists
 Bake.prototype.exists = function (name) {
   var names = document.cookie.split('; ').map(value => value.substring(0, value.indexOf("=")));
   var values = document.cookie.split('; ').map(value => value.substring(value.indexOf("=") + 1));
@@ -89,10 +97,12 @@ Bake.prototype.exists = function (name) {
   }
   return false;
 }
+// Set a given cookie
 Bake.prototype.set = function (name, value) {
   document.cookie = `${name}=${value}`;
   return this;
 }
+// Create a cookie
 Bake.prototype.create = function (name, value, daysExpire) {
   if (typeof expires === "undefined") {
     document.cookie = `${name}=${value}; Secure`;
@@ -109,6 +119,7 @@ Bake.prototype.create = function (name, value, daysExpire) {
   }
   return this;
 }
+// Delete a cookie
 Bake.prototype.delete = function (name) {
   if (typeof name === "undefined") {
     localStorage.removeItem("UserData");
@@ -117,10 +128,12 @@ Bake.prototype.delete = function (name) {
   }
   return this;
 }
+// A function for quick chaining
 Bake.prototype.if = function (bool, cookieFunc, ...parameters) {
   if (bool) this[cookieFunc](...parameters);
   return this;
 }
+// Rename a cookie
 Bake.prototype.rename = function (nOld, nNew) {
   var oldObj = this.get(nOld);
   this.delete(nOld);

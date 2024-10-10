@@ -6,7 +6,6 @@ var redirectUser = (page) => {
   if (typeof page === "undefined") { page = ""; } else { page = `${page}.html`; };
   var redirect = window.location.origin + window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'));
   window.location.replace(`${redirect}/${page}`);
-  //document.write('<html><head><title>Redirecting...</title></head><body></body></html>');
 }
 
 var isLoggedIn = (onlyTeacher, restricted) => {

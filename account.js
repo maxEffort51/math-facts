@@ -1,21 +1,14 @@
-// username
-// old-pass
-// password (new one)
-// repeat-pass
-// Save Changes: #save
-// Log Out: #logout
-// Delete Account: #delete
-
 import { navbarRespond } from './navbar-respond.js';
 import { updateUserIndexes, getUsers, getPassword, secure, findUsername, renameUserData } from './helper.js';
 import cookies from './Cookies.js';
 
 var Users = getUsers();
 
-document.getElementById("username").value = Users._loggedin; // fill the Username input with the current username
+// fill the Username input with the current username
+document.getElementById("username").value = Users._loggedin;
 
+// On the Account page, change the current username to the username inputted in the change username field
 var changeUsername = () => {
-  // new username
   var newName = document.getElementById("username").value;
   if (newName.trim() === Users._loggedin || newName.trim() === "") return;
   var i = findUsername(Users._loggedin);
@@ -27,9 +20,10 @@ var changeUsername = () => {
   localStorage.setItem("Users", JSON.stringify(Users));
 };
 
+// Change the logged in user's password from the stuff on the account page
 var changePassword = () => {
-  document.getElementById('old-pass').style.color = "#FFFFFF";
-  document.getElementById('repeat-pass').style.color = "#FFFFFF";
+  document.getElementById('old-pass').style.color = "#000000";
+  document.getElementById('repeat-pass').style.color = "#000000";
   var oldPassword = document.getElementById("old-pass").value;
   var i = findUsername(Users._loggedin);
   var current = getPassword(`@59n&Ai4XGpzxTHg${Users[i].key}`);
@@ -47,18 +41,21 @@ var changePassword = () => {
   localStorage.setItem("Users", JSON.stringify(Users));
 };
 
+// Completely update everything
 var saveChanges = (e) => {
   e.preventDefault();
   changeUsername();
   changePassword();
 }
 
+// Log out the user
 var logOut = () => {
   cookies.delete(Users._loggedin);
   Users._loggedin = "";
   localStorage.setItem("Users", JSON.stringify(Users));
 };
 
+// Delete the user everywhere
 var deleteUser = () => {
   var i = findUsername(Users._loggedin);
   delete Users[i];
