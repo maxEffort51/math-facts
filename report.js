@@ -59,6 +59,10 @@ var tryShowPopup = () => {
       statsPopup.show(); // Show modal on page load
       updateGrid();
     }
+    var testedSetExists = typeof flashcardSession.problemSet !== "undefined" && typeof flashcardSession.problemSet.tested !== "undefined";
+    var testedSetFilled = flashcardSession.problemSet.tested.length > 0;
+    var noResults = typeof results.isOutdated === "undefined";
+    if (testedSetExists && testedSetFilled && flashcardSession.valid === "Report" && noResults) updateGrid();
     results.isOutdated = true;
     flashcardSession.valid = "Debug";
     localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));

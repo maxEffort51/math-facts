@@ -33,33 +33,44 @@ var cookies = {
     var value = values[index] === "teacher" || values[index] === "student";
     return exists && value;
   },
-  get: (name) => {
-    var cookies = document.cookie.split('; ');
-    var names = cookies.map(value => value.substring(0, value.indexOf("=")));
-    var exists = false;
+  locate: function (name) {
+    var names = document.cookie.split('; ').map(value => value.substring(0, value.indexOf("=")));
     var i = -1;
+    // Loops.for(names.length,(ind) => { ... }) - start?,stop,iterate?,callback
     for (var ind = 0; ind < names.length; ind++) {
       if (names[ind] === name) {
-        exists = true;
         i = ind;
       }
     }
-    if (!exists) return null;
-    var newCookie = { key: names[i] };
+    return {
+      name: name,
+      value: i,
+      not: () => i === -1,
+      cookies: this,
+    };
+  },
+  get: function (name) {
+    var cookies = document.cookie.split('; ');
+    var names = cookies.map(value => value.substring(0, value.indexOf("=")));
+    var l = this.locate(name);
+    if (l.not()) return null;
+    var i = l.value;
+    var newCookie = { key: name };
     var cookieParts = cookies[i].trim().split(';');
     var partNames = cookieParts.map(value => value.substring(0, value.indexOf("=")));
     var partValues = cookieParts.map(value => value.substring(value.indexOf("=") + 1));
-    for (var i = 0; i < cookieParts.length; i++) {
-      if (partNames[i] === names[i]) {
-        newCookie["value"] = partValues[i];
-      } else if (partNames[i] === "expires") {
-        newCookie["expires"] = new Date(partValues[i]);
-      } else if (typeof partValues[i] === "undefined") {
-        newCookie[partNames[i]] = true;
+    for (var j = 0; j < cookieParts.length; j++) {
+      if (partNames[j] === name) {
+        newCookie["value"] = partValues[j];
+      } else if (partNames[j] === "expires") {
+        newCookie["expires"] = new Date(partValues[j]);
+      } else if (typeof partValues[j] === "undefined") {
+        newCookie[partNames[j]] = true;
       } else {
-        newCookie[partNames[i]] = partValues[i];
+        newCookie[partNames[j]] = partValues[j];
       }
     }
+    newCookie.cookies = this;
     return newCookie;
   }
 }

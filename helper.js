@@ -106,7 +106,7 @@ var _secure = (password) => {
 // Reverse the secure function above, taking a hashed password and getting the true password
 var _getPassword = (key) => {
   // "536DO3.OLQDy" -> 3: "536ALLINAv" -> "463ALLINAv" -> "463allinaV" -> "Vanilla364"
-  var s = key.slice(4).indexOf('.') + 4;
+  var s = key.slice(5).indexOf('.') + 5;
   var shift = parseInt(key.slice(5, s));
   var shifted = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
   var nums = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
@@ -181,7 +181,7 @@ var getUserData = (user, loggingIn) => {
   var location = "UserData";
   if (typeof user === "undefined") user = Users._loggedin;
   var logMaybe = (typeof loggingIn !== "undefined" && loggingIn) || typeof loggingIn === "undefined";
-  if (Users._loggedin === user && logMaybe) {
+  if (Users._loggedin === user && logMaybe && user !== "") {
     // The User is logged in, try to get UserData:_username-here_
     location = `UserData:${user}`;
   }

@@ -1,5 +1,5 @@
 import { navbarRespond } from './navbar-respond.js';
-import { updateUserIndexes, checkRestricted, getPassword, secure, createRow, getUsers, getUserData } from './helper.js';
+import { updateUserIndexes, checkRestricted, getPassword, secure, createRow, getUsers, renameUserData, repeatingUsername } from './helper.js';
 import { redirectUser } from './redirect.js';
 import cookies from './Cookies.js';
 
@@ -42,7 +42,7 @@ var authenticate = (username, password, index) => {
     infoAlert.classList.remove("collapse");
     infoAlert.firstElementChild.innerText = "Your password needs to be at least 5 characters long!";
     return true;
-  } else if (typeof index === "number" && repeatingUsername(username, index)) {
+  } else if (repeatingUsername(username, index)) {
     infoAlert.classList.remove("collapse");
     infoAlert.firstElementChild.innerText = "Please choose a unique username.";
     return true;
@@ -103,6 +103,7 @@ var teacherUser = (e) => {
     }
     localStorage.setItem("Users", JSON.stringify(Users));
   }
+  navbarRespond();
 }
 
 /* ------ SAVE USER ------ */
@@ -110,12 +111,22 @@ var teacherUser = (e) => {
 var saveUser = (e) => {
   var row = e.target.parentElement.parentElement;
   var i = row.id;
-  var username = row.firstElementChild.firstElementChild.value;
+  var name = Users[i].name;
+  var newName = row.firstElementChild.firstElementChild.value;
   var password = row.children[1].firstElementChild.value;
-  if (authenticate(username, password, i)) return;
-  Users[i] = { name: username, key: secure(`@59n&Ai4XGpzxTHg${password}`), teacher: Users[i].teacher };
+  if (authenticate(newName, password, i)) return;
+
+  if (!(newName.trim() === name || newName.trim() === "")) {
+    renameUserData(name, newName);
+    if (Users._loggedin === name) {
+      cookies.rename(name, newName);
+      Users._loggedin = newName;
+    }
+  }
+  navbarRespond();
+  Users[i] = { name: newName, key: secure(`@59n&Ai4XGpzxTHg${password}`), teacher: Users[i].teacher };
   Users._empty = false;
-  createRow("@59n&Ai4XGpzxTHg", Users, i, false, row);
+  createRow("@59n&Ai4XGpzxTHg", Users, i, true, row);
   localStorage.setItem("Users", JSON.stringify(Users));
   setupModify(row);
 }

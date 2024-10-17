@@ -1,5 +1,11 @@
 import { getUsers } from './helper.js';
 
+window.onpageshow = function (event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+};
+
 var Users = getUsers();
 
 var redirectUser = (page) => {
@@ -26,26 +32,34 @@ var notLoggedIn = (restricted) => {
 
 var page = window.location.pathname.split('/').pop().split('.').shift();
 
-if (page === "flashcards") {
-  var flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
-
-  if (!(typeof flashcardSession.valid === "string" && flashcardSession.valid === "Activity")) {
-    redirectUser();
-  } else {
-    flashcardSession.valid = "Report";
-    localStorage.setItem('FlashcardSession', JSON.stringify(flashcardSession));
-  }
-} else if (page === "users") {
-  if (isLoggedIn(true, true)) {
-    redirectUser("account");
-  } else if (notLoggedIn(true)) {
-    Users._loggedin = "";
-    redirectUser("login");
-  }
-} else if (page === "login") {
-  if (isLoggedIn()) redirectUser("account");
-} else if (page === "account") {
-  if (notLoggedIn()) redirectUser("login");
+switch (page) {
+  case "flashcards":
+    var flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
+    if (!(typeof flashcardSession.valid === "string" && flashcardSession.valid === "Activity")) {
+      redirectUser();
+    } else {
+      flashcardSession.valid = "Report";
+      localStorage.setItem('FlashcardSession', JSON.stringify(flashcardSession));
+    }
+    break;
+  case "users":
+    if (isLoggedIn(true, true)) {
+      redirectUser("account");
+    } else if (notLoggedIn(true)) {
+      Users._loggedin = "";
+      redirectUser("login");
+    }
+    break;
+  case "login":
+    if (isLoggedIn()) {
+      redirectUser("account");
+    } else if (notLoggedIn() && Users._empty) {
+      redirectUser("users");
+    }
+    break;
+  case "account":
+    if (notLoggedIn()) redirectUser("login");
+    break;
 }
 
 export { redirectUser };
