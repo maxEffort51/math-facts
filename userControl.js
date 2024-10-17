@@ -1,6 +1,4 @@
-import { navbarRespond } from './navbar-respond.js';
-import { updateUserIndexes, checkRestricted, getPassword, secure, createRow, getUsers, renameUserData, repeatingUsername } from './helper.js';
-import { redirectUser } from './redirect.js';
+import { updateUserIndexes, createRow, getUsers, renameUserData, repeatingUsername } from './helper.js';
 import cookies from './Cookies.js';
 
 var Users = getUsers();
@@ -18,7 +16,6 @@ var setup = (el, todo) => {
 
 var setupModify = (row) => {
   setup(row.querySelector('#edit'), editUser);
-  setup(row.querySelector('#teacher'), teacherUser);
   setup(row.querySelector('#delete'), deleteUser);
   setup(row.querySelector('.login'), loginUser);
 }
@@ -33,25 +30,23 @@ var setupNew = () => {
   setup(newEl, newUser);
 }
 
-var authenticate = (username, password, index) => {
-  if (username.trim() === "" || password.trim() === "") {
+var authenticate = (username, index) => {
+  if (username.trim() === "") {
     infoAlert.classList.remove("collapse");
-    infoAlert.firstElementChild.innerText = "You didn't fill out both of the required fields!";
-    return true;
-  } else if (password.length < 5) {
-    infoAlert.classList.remove("collapse");
-    infoAlert.firstElementChild.innerText = "Your password needs to be at least 5 characters long!";
-    return true;
+    infoAlert.firstElementChild.innerText = "You didn't fill out the username!";
   } else if (repeatingUsername(username, index)) {
     infoAlert.classList.remove("collapse");
     infoAlert.firstElementChild.innerText = "Please choose a unique username.";
-    return true;
+  } else if (username.length > 16) {
+    infoAlert.classList.remove("collapse");
+    infoAlert.firstElementChild.innerText = "Your username can't have more than 16 characters!";
   } else {
     if (!infoAlert.classList.contains("collapse")) {
       infoAlert.classList.add("collapse");
     }
+    return false;
   }
-  return false;
+  return true;
 }
 
 /* ------ DELETE USER ------ */
@@ -63,47 +58,17 @@ var deleteUser = (e) => {
   if (Users._loggedin === username) {
     cookies.delete(username);
     Users._loggedin = "";
-    checkRestricted();
   }
   localStorage.removeItem(`UserData:${username}`); // clear user data
   delete Users[i]; // clear Users data
   row.remove();
   Users._length--;
   if (Users._length == 0) Users._empty = true;
+  localStorage.setItem("Users", JSON.stringify(Users));
   updateUserIndexes(i);
   document.getElementById("user-list").innerHTML = "";
   loadTable();
-  localStorage.setItem("Users", JSON.stringify(Users));
   setupNew();
-}
-
-/* ------ TOGGLE TEACHER ATTRIBUTE ------ */
-
-var teacherUser = (e) => {
-  var row = e.target.parentElement.parentElement;
-  var i = row.id;
-  if (Users[i].teacher) {
-    Users[i].teacher = false;
-    if (cookies.loggedIn(Users[i].name)) {
-      cookies.set(Users[i].name, "student");
-    }
-    localStorage.setItem("Users", JSON.stringify(Users));
-    checkRestricted();
-    e.target.innerText = "Student";
-    row.classList.remove('table-success');
-  } else {
-    Users[i].teacher = true;
-    if (cookies.loggedIn(Users[i].name)) {
-      cookies.set(Users[i].name, "teacher");
-    }
-    Users._restricted = true;
-    e.target.innerText = "Teacher";
-    if (!row.classList.contains('table-success')) {
-      row.classList.add('table-success');
-    }
-    localStorage.setItem("Users", JSON.stringify(Users));
-  }
-  navbarRespond();
 }
 
 /* ------ SAVE USER ------ */
@@ -111,10 +76,9 @@ var teacherUser = (e) => {
 var saveUser = (e) => {
   var row = e.target.parentElement.parentElement;
   var i = row.id;
-  var name = Users[i].name;
+  var name = Users[i];
   var newName = row.firstElementChild.firstElementChild.value;
-  var password = row.children[1].firstElementChild.value;
-  if (authenticate(newName, password, i)) return;
+  if (authenticate(newName, i)) return;
 
   if (!(newName.trim() === name || newName.trim() === "")) {
     renameUserData(name, newName);
@@ -123,10 +87,9 @@ var saveUser = (e) => {
       Users._loggedin = newName;
     }
   }
-  navbarRespond();
-  Users[i] = { name: newName, key: secure(`@59n&Ai4XGpzxTHg${password}`), teacher: Users[i].teacher };
+  Users[i] = newName;
   Users._empty = false;
-  createRow("@59n&Ai4XGpzxTHg", Users, i, true, row);
+  createRow(Users, i, row);
   localStorage.setItem("Users", JSON.stringify(Users));
   setupModify(row);
 }
@@ -136,7 +99,7 @@ var saveUser = (e) => {
 var editUser = (e) => {
   var row = e.target.parentElement.parentElement;
   var i = row.id;
-  row.innerHTML = `<td><input type="text" id="username" value="${Users[i].name}" autocomplete="username"></td><td><input type="password" id="password" autocomplete="new-password" value="${getPassword(`@59n&Ai4XGpzxTHg${Users[i].key}`)}"></td><td><button class="btn" id="save">Save</button></td>`;
+  row.innerHTML = `<td><input type="text" id="username" value="${Users[i]}" autocomplete="username"></td><td style="text-align: right"><button class="btn" id="save">Save</button></td>`;
   setup(row.querySelector('#save'), saveUser);
 }
 
@@ -146,18 +109,21 @@ var loginUser = (e) => {
   var row = e.target.parentElement.parentElement;
   var i = row.id;
   var username = row.firstElementChild.firstElementChild.innerText;
-  if (Users._loggedin === username && e.target.innerText === "User") {
-    redirectUser("account");
+  if (Users._loggedin === username && e.target.innerText === "Log Out") {
+    // Log out
+    Users._loggedin = "";
+    localStorage.setItem("Users", JSON.stringify(Users));
+    cookies.delete(username);
+    e.target.innerText = "Log In";
   } else {
     Users._loggedin = username;
     localStorage.setItem("Users", JSON.stringify(Users));
-    cookies.generateData(username, true).delete().create(username, Users[i].teacher ? "teacher" : "student", 7);
+    cookies.generateData(username, true).delete().create(username, "exists", 7);
     var loginBtns = document.getElementsByClassName("login");
     for (var i = 0; i < loginBtns.length; i++) {
       loginBtns[i].innerText = "Log In";
     }
-    e.target.innerText = "User";
-    navbarRespond();
+    e.target.innerText = "Log Out";
   }
 }
 
@@ -166,14 +132,13 @@ var loginUser = (e) => {
 var addUser = () => {
   var lastRow = document.getElementById("last");
   var username = lastRow.firstElementChild.firstElementChild.value;
-  var password = lastRow.children[1].firstElementChild.value;
-  if (authenticate(username, password)) return;
-  Users[Users._length++] = { name: username, key: secure(`@59n&Ai4XGpzxTHg${password}`), teacher: false };
+  if (authenticate(username)) return;
+  Users[Users._length++] = username;
   Users._empty = false;
-  createRow("@59n&Ai4XGpzxTHg", Users, Users._length - 1, true, lastRow);
+  createRow(Users, Users._length - 1, lastRow);
   localStorage.setItem("Users", JSON.stringify(Users));
   var userList = document.getElementById("user-list");
-  userList.appendChild(createRow("@59n&Ai4XGpzxTHg", "new"));
+  userList.appendChild(createRow("new"));
   setupModify(lastRow);
   setupNew();
 }
@@ -182,23 +147,23 @@ var addUser = () => {
 
 var newUser = () => {
   var lastRow = document.getElementById("last");
-  lastRow.innerHTML = `<td><input type="text" id="username" autocomplete="username"></td><td><input type="password" id="password" autocomplete="new-password"></td><td><button class="btn" id="add">Add</button></td>`;
+  lastRow.innerHTML = `<td><input type="text" id="username" autocomplete="username"></td><td style="text-align: right"><button class="btn" id="add">Add</button></td>`;
   setupAdd();
 }
 
 /* ------ LOAD TABLE ------ */
 
 var loadTable = () => {
+  Users = JSON.parse(localStorage.getItem("Users"));
   var userList = document.getElementById("user-list");
   if (!Users._empty) {
     for (var i = 0; i < Users._length; i++) {
-      var row = createRow("@59n&Ai4XGpzxTHg", Users, i, true);
-      if (Users[i].teacher) row.classList.add('table-success');
+      var row = createRow(Users, i);
       userList.appendChild(row);
       setupModify(row);
     }
   }
-  userList.appendChild(createRow("@59n&Ai4XGpzxTHg", "new"));
+  userList.appendChild(createRow("new"));
   setupNew();
 }
 

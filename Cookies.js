@@ -39,7 +39,7 @@ Bake.prototype.loggedIn = function (username) {
   var l = this.locate(username);
   if (l.not()) return false;
   var i = l.value;
-  return values[i] === "teacher" || values[i] === "student";
+  return values[i] === "exists";
 }
 Bake.prototype.generateData = function (name, loggingIn) {
   var location = `UserData:${name}`;
