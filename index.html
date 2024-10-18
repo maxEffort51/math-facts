@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="options.css">
+  <title>Math Facts - Flashcard Options</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm">
+    <div class="container">
+      <a class="navbar-brand" href="#"><img class="logo" src="logo.png" alt="Math Facts"></a>
+      <ul class="navbar-nav mt-1">
+        <li class="nav-item p-1">
+          <a class="nav-link" aria-current="page" href="#">Flashcards</a>
+        </li>
+        <li class="nav-item p-1">
+          <a class="nav-link" href="report.html">Progress</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid align-middle me-auto">
+    <h1 class="center">Flashcard Options</h1>
+    <div class="center option">
+      <div id="categ">
+        <span>Categories:</span>
+        <span class="hidden">_</span>
+        <div class="select">
+          <span class="checked">
+            <input type="checkbox" class="btn-check" id="add" name="checkboxes" value="add" checked>
+            <label class="select-btn" for="add">+</label>
+          </span>
+          <span>
+            <input type="checkbox" class="btn-check" id="sub" name="checkboxes" value="sub">
+            <label class="select-btn" for="sub">-</label>
+          </span>
+          <span>
+            <input type="checkbox" class="btn-check" id="mult" name="checkboxes" value="mult">
+            <label class="select-btn" for="mult">×</label>
+          </span>
+          <span>
+            <input type="checkbox" class="btn-check" id="div" name="checkboxes" value="div">
+            <label class="select-btn" for="div">÷</label>
+          </span>
+        </div>
+      </div>
+      <div id="act-time">
+        <span>Activity Time Limit:</span>
+        <span class="hidden">_</span>
+        <div class="select">
+          <span class="checked">
+            <input type="radio" class="btn-check" name="activity-time" id="3min" value="at180000" checked>
+            <label class="select-btn" for="3min">3min</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="activity-time" id="5min" value="at300000">
+            <label class="select-btn" for="5min">5min</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="activity-time" id="act-inf" value="at-1">
+            <label class="select-btn" for="act-inf">∞</label>
+          </span>
+        </div>
+      </div>
+      <div id="prob-time">
+        <span>Problem Time Limit:</span>
+        <span class="hidden">_</span>
+        <div class="select">
+          <span class="checked">
+            <input type="radio" class="btn-check" name="problem-time" id="3sec" value="pt3000" checked>
+            <label class="select-btn" for="3sec">3sec</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="problem-time" id="5sec" value="pt5000">
+            <label class="select-btn" for="5sec">5sec</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="problem-time" id="infinite" value="pt-1">
+            <label class="select-btn" for="infinite">∞</label>
+          </span>
+        </div>
+      </div>
+      <div id="voice">
+        <span>Wrong Answer Correction:</span>
+        <span class="hidden">_</span>
+        <div class="select">
+          <span class="checked">
+            <input type="radio" class="btn-check" name="voice" id="1x" value="1" checked>
+            <label class="select-btn" for="1x">1x</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="voice" id="2x" value="2">
+            <label class="select-btn" for="2x">2x</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="voice" id="3x" value="3">
+            <label class="select-btn" for="3x">3x</label>
+          </span>
+          <span>
+            <input type="radio" class="btn-check" name="voice" id="off" value="0">
+            <label class="select-btn" for="off">Off</label>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="center"><a href="#" id="submit" class="btn btn-start">Start</a></div>
+  </div>
+
+  <footer class="container-fluid footer">© 2024 Terry Family. All rights reserved.</footer>
+
+  <script src="select.js"></script>
+  <script type="module" src="send.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    document.getElementsByTagName('footer')[0].value = `© ${new Date().getFullYear()} Terry Family. All rights reserved.`;
+  </script>
+</body>
+
+</html>

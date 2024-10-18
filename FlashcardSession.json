@@ -1,0 +1,20 @@
+{
+  "choices": {
+    "categories": {
+      "add": false,
+      "sub": false,
+      "mult": false,
+      "div": false
+    },
+    "timeLimit": 180000,
+    "problemLimit": 3000,
+    "voiceRepeat": 1
+  },
+  "problemSet": {
+    "untested": [],
+    "current": "",
+    "tested": []
+  },
+  "timers": {},
+  "results": {}
+}

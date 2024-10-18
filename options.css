@@ -1,0 +1,142 @@
+.option {
+  font-size: calc(0.8rem + 0.6vw);
+  margin-bottom: 20px;
+}
+
+.option div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  padding: 0;
+  align-items: center;
+  margin: 1px;
+  font-size: inherit;
+}
+
+.btn-start {
+  font-size: calc(0.9rem + 0.6vw);
+  padding: 0 1.7rem;
+  border-radius: 0.45rem;
+  color: #4b2400;
+  border: 2px solid #ff7301;
+  background-color: #ede2d4;
+}
+
+.select {
+  border: 2px solid black;
+  border-radius: 0.45rem;
+  color: #4b2400;
+  user-select: none;
+  cursor: pointer;
+}
+
+#categ .select span {
+  width: 29px;
+  padding: 0;
+}
+
+.select span {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  margin: 0;
+  text-align: center;
+  cursor: inherit;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0.5px 0px;
+}
+
+.select span:first-child {
+  border-left: none;
+  border-top-left-radius: .4rem;
+  border-bottom-left-radius: .4rem;
+}
+
+.select span:last-child {
+  border-right: none;
+  border-top-right-radius: .4rem;
+  border-bottom-right-radius: .4rem;
+}
+
+.select-btn {
+  font-size: calc(0.8rem + 0.6vw);
+  padding: 0px 7px;
+  cursor: inherit;
+  line-height: normal;
+}
+
+.checked {
+  background-color: #ede2d4;
+}
+
+.btn-start:hover {
+  color: #4b2400;
+}
+
+.btn-start:focus {
+  outline: none;
+}
+
+@media only screen and (max-width: 700px) {
+  .select-btn {
+    padding: 0 3px;
+    font-size: 12px;
+  }
+
+  .option {
+    font-size: 12px;
+  }
+
+  .btn-start {
+    font-size: 13px;
+    padding: 0 14px;
+    border-radius: 0.3rem;
+    border-width: 1px;
+  }
+
+  .select {
+    border-radius: 0.4rem;
+    border-width: 1.3px;
+  }
+
+  #categ .select span {
+    width: calc(12px + 0.8vw);
+  }
+
+  .select span {
+    border-left: 0.7px solid black;
+    border-right: 0.7px solid black;
+    margin: 0;
+    text-align: center;
+    cursor: inherit;
+  }
+
+  .select span:first-child {
+    border-left: none;
+    border-top-left-radius: .35rem;
+    border-bottom-left-radius: .35rem;
+  }
+
+  .select span:last-child {
+    border-right: none;
+    border-top-right-radius: .35rem;
+    border-bottom-right-radius: .35rem;
+  }
+}
+
+@media only screen and (min-width: 1700px) {
+  .select-btn {
+    font-size: 1.7rem;
+  }
+
+  .btn-start {
+    font-size: 1.8rem;
+  }
+
+  .option {
+    font-size: 1.7rem;
+  }
+}
