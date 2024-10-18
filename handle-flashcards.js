@@ -1,37 +1,44 @@
 
 // Set up the variables for generating the Problem Set
 import Problems from './Problems.json' with { type: "json" };
+import { getUserData } from './helper.js';
 
 var flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
 
-if (!(typeof flashcardSession.valid === "string" && flashcardSession.valid === "Activity")) {
-  var redirect = window.location.origin + window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'));
-  window.location.href = redirect;
-} else {
-  flashcardSession.valid = "Report";
-  localStorage.setItem('FlashcardSession', JSON.stringify(flashcardSession));
-}
+// Determine what to do when the user enters input
+var enterInput = (type) => {
+  flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
+  var contents = document.getElementById("input");
+  var set = flashcardSession.problemSet;
+  var answer = searchProblems(set.current);
+  contents.disabled = true;
+  if (parseInt(contents.value) === answer) {
+    // they got it right!
+    right(contents);
+  } else {
+    var time = false;
+    if (typeof type === "string" && type == "time") time = true;
+    wrong(answer, contents, time);
+  }
+};
 
+// Set the problem time loop
 var setProblemTime = () => {
   flashcardSession.timers.problemStartTimestamp = Date.now();
-
   if (flashcardSession.timers.problem) clearTimeout(flashcardSession.timers.problem);
-
   if (flashcardSession.choices.problemLimit !== -1) {
     flashcardSession.timers.problem = setTimeout(() => {
-      // execute problem time end here...
       var contents = document.getElementById("input");
       contents.disabled = true;
       enterInput('time');
-      // wrong("", contents);
     }, flashcardSession.choices.problemLimit);
   } else {
     flashcardSession.timers.problem = "none";
   }
-
   localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
 };
 
+// Initiate the activity time and problem time
 var initiateTime = () => {
   var timeHandler = flashcardSession.timers;
   timeHandler.scheduleEnd = false;
@@ -47,7 +54,8 @@ var initiateTime = () => {
 initiateTime();
 
 // Update the flashcard
-var updateFlashcard = (current) => {
+var updateFlashcard = (set) => {
+  var current = set.current;
   var n1 = document.getElementById("n1");
   var symbol = document.getElementById("sym");
   var n2 = document.getElementById("n2");
@@ -61,11 +69,12 @@ var updateFlashcard = (current) => {
   n1.innerText = current.substring(0, current.indexOf(symbol.innerText))
   n2.innerText = current.substring(current.indexOf(symbol.innerText) + 1);
 
+  flashcardSession.problemSet = set;
   localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
 }
 
+// Move a question to the tested array within the ProblemSet sub object
 var moveToTested = (state) => {
-  // make an object out of set.current, state, and problem time and put it in the tested array
   var set = flashcardSession.problemSet;
   var finishedQuestion = {
     q: set.current,
@@ -73,35 +82,77 @@ var moveToTested = (state) => {
     time: Date.now() - flashcardSession.timers.problemStartTimestamp
   };
   set.tested.push(finishedQuestion);
-
   localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
 };
 
+var pullRandom = () => Math.abs(Math.ceil(Math.random() * flashcardSession.problemSet.untested.length - 1));
+
+var getDataArray = (data, q) => {
+  if (q.indexOf('+') !== -1) {
+    return data.add;
+  } else if (q.indexOf('-') !== -1) {
+    return data.sub;
+  } else if (q.indexOf('×') !== -1) {
+    return data.mult;
+  } else if (q.indexOf('÷') !== -1) {
+    return data.div;
+  }
+}
+
+var getData = (data, q) => {
+  if (q.indexOf('+') !== -1) {
+    return data.add[q];
+  } else if (q.indexOf('-') !== -1) {
+    return data.sub[q];
+  } else if (q.indexOf('×') !== -1) {
+    return data.mult[q];
+  } else if (q.indexOf('÷') !== -1) {
+    return data.div[q];
+  }
+}
+
+// Get the index of a random problem; input the chance that a question that would've been already correct will try again to get a random index
+var findRandom = (data, chance, i) => {
+  if (typeof i === "undefined") i = 0;
+  if (typeof chance === "undefined") chance = 0.5;
+  var random = pullRandom();
+  var untested = flashcardSession.problemSet.untested;
+  if (i > 5) {
+    // search the untested for a question that was gotten wrong or there's no data for
+    for (var i = 0; i < untested.length; i++) {
+      var value = getData(data, untested[i]);
+      if (value === "incorrect" || value === "no-data") {
+        return i;
+      }
+    }
+    return pullRandom();
+  };
+  if (getData(data, flashcardSession.problemSet.untested[random]) === "correct") {
+    var skip = Math.random();
+    if (skip < chance) {
+      return findRandom(data, chance, i + 1);
+    }
+  }
+  return random;
+}
+
 var grabFromSet = () => {
-  document.getElementById('input').disabled = false; // reset contents disabled
+  document.getElementById('input').disabled = false;
   document.getElementById('input').focus();
-
   var set = flashcardSession.problemSet;
-  if (set.untested.length === 0) return;
-
-  var randIndex = Math.ceil(Math.random() * set.untested.length - 1);
-  // console.log(randIndex);
-  set.current = set.untested[randIndex];
-  // console.log(flashcardSession.problemSet);
-  flashcardSession.problemSet.untested.splice(randIndex, 1);
-  // console.log(flashcardSession.problemSet);
-
-  updateFlashcard(set.current);
+  if (set.untested.length === 0) endActivity();
+  var random = pullRandom();
+  var data = getUserData();
+  var random = findRandom(data, 0.7);
+  set.current = set.untested[random];
+  set.untested.splice(random, 1);
+  updateFlashcard(set);
 }
 
 // Generate a Problem Set
 var generate = () => {
-
   var set = [];
   Object.entries(flashcardSession.choices.categories).forEach((cat) => {
-    // console.log(Problems[cat[0]]);
-    // console.log(cat[0]);
-    // console.log([...Problems[cat[0]]]);
     if (cat[1]) {
       var noTest = [];
       var toAdd = Problems[cat[0]];
@@ -115,9 +166,6 @@ var generate = () => {
     }
   })
   flashcardSession.problemSet = { untested: set, current: "", tested: [] };
-
-  //console.log(flashcardSession.problemSet);
-
   grabFromSet();
 };
 generate();
@@ -143,39 +191,9 @@ var searchProblems = (key) => {
   return null;
 };
 
-// What to do when the user enters input
-var enterInput = (type) => {
-  flashcardSession = JSON.parse(localStorage.getItem("FlashcardSession"));
-
-  var contents = document.getElementById("input");
-  //console.log("input: " + contents.value);
-  var set = flashcardSession.problemSet;
-  var answer = searchProblems(set.current);
-  // console.log(answer);
-  // console.log(contents.value);
-  //console.log(answer);
-  contents.disabled = true;
-
-  if (parseInt(contents.value) === answer) {
-    // they got it right!
-    right(contents);
-  } else {
-    var time = false;
-    if (typeof type === "string" && type == "time") time = true;
-    wrong(answer, contents, time);
-  }
-};
-
+// The user got it right; this function controls what happens
 var right = (contents) => {
-  // change text color
-  // play ding sound and wait
-
-  // console.log("hello, " + flashcardSession.timers.problem);
-
   if (!flashcardSession.timers.problem) return;
-
-  //console.log(flashcardSession.timers.problem + " - after");
-
 
   if (flashcardSession.timers.problem !== "none") {
     clearTimeout(flashcardSession.timers.problem);
@@ -185,7 +203,7 @@ var right = (contents) => {
   moveToTested("correct");
   var ding = new Audio('ding-sound.mp3');
   flashcardSession.timers.soundPlaying = true;
-  var doNext = () => {
+  var next = () => {
     flashcardSession.timers.soundPlaying = false;
     if (flashcardSession.timers.scheduleEnd) { endActivity("timeout"); return; }
     // reset text color, clear input, and reset everything else
@@ -194,22 +212,42 @@ var right = (contents) => {
     grabFromSet();
     setProblemTime();
   };
-  ding.play().catch(doNext);
-  ding.onended = doNext;
+  ding.play().catch(next);
+  ding.onended = next;
 };
 
+var speak = (text, voice, repeat, end, pause) => {
+  if (typeof repeat === "undefined") repeat = 1;
+  if (typeof voice === "undefined") voice = "UK English Male";
+  if (typeof end === "undefined") end = () => { };
+  if (typeof pause === "undefined") pause = 0;
+  repeat = Math.abs(Math.round(repeat % 3));
+
+  var speakOnce = (params) => responsiveVoice.speak(text, voice, params);
+
+  speakOnce({
+    onend: () => {
+      if (repeat == 1) { end(); return } // Only speak once
+      setTimeout(() => {
+        speakOnce({
+          onend: () => {
+            if (repeat == 2) { end(); return; } // Only speak twice
+            setTimeout(() => { speakOnce({ onend: end }); }, pause);
+          }
+        })
+      }, pause);
+    }
+  });
+}
+
+// The user got it wrong; this function controls what happens
 var wrong = (answer, contents, time) => {
-
   if (!flashcardSession.timers.problem) return;
-
-  //console.log(flashcardSession.timers.problem + " - after");
-
 
   if (flashcardSession.timers.problem !== "none") {
     clearTimeout(flashcardSession.timers.problem);
     flashcardSession.timers.problem = false;
   }
-
   if (typeof time !== "undefined" && time) {
     contents.style.borderColor = "#ff1800";
   } else { contents.style.color = "#ff1800"; }
@@ -217,64 +255,32 @@ var wrong = (answer, contents, time) => {
 
   var error = new Audio('error-sound.mp3');
   flashcardSession.timers.soundPlaying = true;
-  var doNext = () => {
+  var next = () => {
     if (flashcardSession.timers.scheduleEnd) { endActivity("timeout"); return; }
-
     contents.value = answer;
     contents.style.color = "black";
     contents.style.borderColor = "black";
 
     // Voiceover audio
-    var voiceRepeat = flashcardSession.choices.voiceRepeat;
+    var repeat = flashcardSession.choices.voiceRepeat;
 
-    var atVeryEnd = () => {
+    var end = () => {
       flashcardSession.timers.soundPlaying = false;
       if (flashcardSession.timers.scheduleEnd) { endActivity("timeout"); return; }
       contents.value = "";
       grabFromSet();
       setProblemTime();
     }
-
-    if (voiceRepeat == 0) {
-      atVeryEnd();
-      return;
-    }
+    if (repeat == 0) { end(); return; }
     answer = searchProblems(flashcardSession.problemSet.current);
-
-    var correctionText = `${flashcardSession.problemSet.current} = ${answer}. `;
-
-    var pauseTime = 100;
-
-    var parameters = {
-      onend: () => {
-        if (voiceRepeat == 1) { atVeryEnd(); return; }
-        setTimeout(() => {
-          var param2 = {
-            onend: () => {
-              if (voiceRepeat == 2) { atVeryEnd(); return; }
-              setTimeout(() => {
-                var param2 = {
-                  onend: atVeryEnd
-                }
-                responsiveVoice.speak(correctionText, "UK English Male", param2);
-              }, pauseTime);
-            }
-          }
-          responsiveVoice.speak(correctionText, "UK English Male", param2);
-        }, pauseTime);
-      }
-    }
-    responsiveVoice.speak(correctionText, "UK English Male", parameters);
+    var text = `${flashcardSession.problemSet.current} = ${answer}.`;
+    speak(text, "UK English Male", repeat, end, 100);
   }
-  error.play().catch(doNext);
-  error.onended = doNext;
+  error.play().catch(next);
+  error.onended = next;
 };
 
 var endActivity = (way) => {
-  // compile results object
-
-  // if (way === "key") console.log("here");
-
   let tested = flashcardSession.problemSet.tested;
   let totalCorrect = 0;
   let totalTime = 0;
@@ -284,7 +290,6 @@ var endActivity = (way) => {
       totalTime += tested[i].time;
     }
   }
-
   flashcardSession.results = {
     isOutdated: false,
     percentageProblemsCorrect: Math.round(totalCorrect / tested.length * 100),
@@ -293,24 +298,11 @@ var endActivity = (way) => {
     totalActivityTime: way === "timeout" ? flashcardSession.choices.timeLimit : Date.now() - flashcardSession.timers.activityStartTimestamp,
     averageProblemTime: Math.round(totalTime / totalCorrect)
   };
-
-  // if (way === "key") console.log(tested);
-
   localStorage.setItem("FlashcardSession", JSON.stringify(flashcardSession));
 
   // leave the page
   var redirect = window.location.origin + window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'));
   window.location.href = `${redirect}/report.html`;
 }
-
-/* Audio guid in raw JavaScript:
-
-mySound = new Audio(audioFile);
-mySound.play();
-mySound.onended = function() {
-    // Whatever you want to do when the audio ends.
-};
-
-*/
 
 export { grabFromSet, generate, enterInput, endActivity };

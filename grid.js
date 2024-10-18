@@ -1,5 +1,7 @@
+import { getUserData } from './helper.js';
+
+// Make the tabs in the Progress page work
 var changeGrid = (to, arrFrom, iFrom) => {
-  ////console.log('changing to ' + to);
   var all = document.getElementsByClassName('grid');
   for (var i = 0; i < all.length; i++) {
     if (all[i].id === to && !all[i].classList.contains('show')) {
@@ -18,10 +20,10 @@ a[1].onclick = () => changeGrid('-', a, 1);
 a[2].onclick = () => changeGrid('*', a, 2);
 a[3].onclick = () => changeGrid('/', a, 3);
 
+// Generate all items for a certain grid on the Progress page
 var generateGrid = (to) => {
   var userArr;
-  var UserData = JSON.parse(localStorage.getItem('UserData'));
-
+  var UserData = getUserData();
   switch (to) {
     case "+":
       userArr = Object.entries(UserData.add);
@@ -39,33 +41,18 @@ var generateGrid = (to) => {
       console.log('generateGrid was not inputted a valid id');
       return;
   }
-
   var grid = document.getElementById(to).querySelector('table');
   var rows = grid.querySelectorAll('tr');
-  //console.log(rows);
-
-  //console.log(userArr);
-
   var rowLen = rows.length - 1;
-
   for (var i = 1; i <= rowLen; i++) {
     // first row, i = 1
     for (var j = 0; j < rowLen; j++) {
-      // first row, first column (0 + 0), i = 1 & j = 0. Confusing.
+      // first row, first column (0 + 0), i = 1 & j = 0
       var p = rows[j + 1].querySelectorAll('td')[i - 1];
-      //console.log(p);
-
-      // console.log(i - 1);
-      // console.log(j);
-      //console.log((i - 1) * rowLen + j);
-      //console.log(p);
-      //console.log(userArr[(i - 1) * rowLen + j]);
-
       p.innerText = userArr[(i - 1) * rowLen + j][0];
-
       p.classList.add(userArr[(i - 1) * rowLen + j][1])
-
-      //console.log(p);
     }
   }
 };
+
+export { generateGrid };
